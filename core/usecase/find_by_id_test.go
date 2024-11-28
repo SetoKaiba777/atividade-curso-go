@@ -2,29 +2,16 @@ package usecase
 
 import (
 	"api-pedidos/core/domain"
+	"api-pedidos/core/usecase/input"
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-
-
-func TestSaveDataExecute(t *testing.T) {
-	inPadrao := domain.Pedido{
-		UserId: "testUser",
-		ListaProdutos: []domain.Produto{
-			{
-				Nome:       "Bomba Nuclear",
-				Valor:      10.00,
-				Quantidade: 10,
-			},
-		},
-	}
-
-	outPadrao := domain.Pedido{
+func TestFindByIdExecute(t *testing.T) {
+	respDef := domain.Pedido{
 		Id:     "1",
 		UserId: "testUser",
 		ListaProdutos: []domain.Produto{
@@ -38,35 +25,35 @@ func TestSaveDataExecute(t *testing.T) {
 
 	tt := []struct {
 		name     string
-		input    domain.Pedido
+		input    *input.FindByIdInput
 		expected domain.Pedido
 		err      error
 	}{
 		{
 			name:     "Sucesso",
-			input:    inPadrao,
-			expected: outPadrao,
+			input:    &input.FindByIdInput{Id: "1"},
+			expected: respDef,
 			err:      nil,
 		},
 		{
 			name:     "Erro",
-			input:    inPadrao,
+			input:    &input.FindByIdInput{Id: "1"},
 			expected: domain.Pedido{},
-			err:      fmt.Errorf("Database error"),
+			err:      databaseErr,
 		},
 	}
 	for _, sc := range tt {
 		t.Run(sc.name, func(t *testing.T) {
 			//Cria a estrtura de teste
 			r := NewMockDatabase()
-			uc := NewSaveData(r)
-			
+			uc := NewSearchById(r)
+
 			// Estabelece comportamento do mock
-			r.On("Add", mock.Anything, mock.Anything).Return(sc.expected, sc.err)
-			
+			r.On("GetById", mock.Anything, mock.Anything).Return(sc.expected, sc.err)
+
 			//Execução
 			ctx := context.TODO()
-			out, err := uc.Execute(&ctx, &sc.input)
+			out, err := uc.Execute(&ctx, sc.input)
 
 			//Validação
 			assert.Equal(t, sc.expected, *out)

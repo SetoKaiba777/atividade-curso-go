@@ -1,6 +1,8 @@
 package domain
 
-import "fmt"
+import (
+	"api-pedidos/core/erros"
+)
 
 type (
 	Pedido struct {
@@ -8,22 +10,50 @@ type (
 		UserId        string
 		Status        Status
 		ListaProdutos []Produto
-		ValorTotal int64
+		ValorTotal    float64
 	}
 	Produto struct {
 		Nome       string
 		Valor      float64
 		Quantidade int
 	}
+	Opt func(*Pedido)
 )
-func NewPedido()
 
-func (p *Pedido) valorTotal() float64 {
+func NewPedido(opts ...Opt) *Pedido {
+	p := &Pedido{ListaProdutos: []Produto{}}
+	for _, opt := range opts {
+		opt(p)
+	}
+	p.valorTotal()
+
+	return p
+}
+
+func WithUserId(userId string) Opt {
+	return func(p *Pedido) {
+		p.UserId = userId
+	}
+}
+
+func WithStaus(status Status) Opt {
+	return func(p *Pedido) {
+		p.Status = status
+	}
+}
+
+func WithListaProdutos(produtos []Produto) Opt {
+	return func(p *Pedido) {
+		p.ListaProdutos = produtos
+	}
+}
+
+func (p *Pedido) valorTotal() {
 	total := 0.0
 	for _, v := range p.ListaProdutos {
 		total += float64(v.Quantidade) * v.Valor
 	}
-	return total
+	p.ValorTotal = total
 }
 
 func (p *Pedido) UpdateStatus(status Status) error {
@@ -31,5 +61,5 @@ func (p *Pedido) UpdateStatus(status Status) error {
 		p.Status = status
 		return nil
 	}
-	return fmt.Errorf("mudança de status inválida! %v", status)
+	return erros.NewChangeStatusErr(int(status))
 }

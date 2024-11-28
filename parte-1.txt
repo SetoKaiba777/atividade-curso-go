@@ -1,0 +1,6 @@
+1- Criar um Construtor Para o Pedido de modo que o ValorTotal do Pedido se 
+torne um parâmetro
+2- Criar UC
+	- Listar por Cod de Cliente
+	- Listar por Id do Pedido
+	- Atualizar Status do Pedido
