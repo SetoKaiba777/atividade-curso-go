@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"api-pedidos/core/domain"
+	"api-pedidos/core/erros"
 	"api-pedidos/core/usecase/input"
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -82,7 +82,7 @@ func TestUpdateStatusExecute(t *testing.T) {
 			name:        "Falha ao atualizar status",
 			input:       &input.UpdateStatusInput{Id: "1", Status: domain.CONCLUIDO},
 			expected:    domain.Pedido{},
-			expectedErr: fmt.Errorf("mudança de status inválida! %v", domain.CONCLUIDO),
+			expectedErr: erros.NewChangeStatusErr(int(domain.CONCLUIDO)),
 			getMock:     outPadrao,
 			getErr:      nil,
 		},

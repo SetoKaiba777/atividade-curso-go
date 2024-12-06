@@ -7,12 +7,15 @@ import (
 	"net/http"
 )
 
-func HandleError(w http.ResponseWriter, err error){
+func HandleError(w http.ResponseWriter, err error) {
 	var status int
 
 	switch {
-	case errors.Is(erros.ChangeStatusErr{}, err):
+	case errors.As(err, &erros.ChangeStatusErr{}),
+		errors.As(err, &erros.InvalidRequestErr{}):
 		status = http.StatusBadRequest
+	case errors.As(err, &erros.NotFoundErr{}):
+		status = http.StatusNotFound
 	default:
 		status = http.StatusInternalServerError
 	}

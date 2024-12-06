@@ -20,18 +20,18 @@ func NewUpdateStatusController(uc usecase.UpdateStatus) *UpdateStatusController 
 
 func (c *UpdateStatusController) Execute(w http.ResponseWriter, r *http.Request) {
 	jsonBody, err := io.ReadAll(r.Body)
-	if err != nil{
-		handler.HandleError(w,err)
+	if err != nil {
+		handler.HandleError(w, err)
 	}
-	
-	var i *input.UpdateStatusInput
-	if err := json.Unmarshal(jsonBody, i); err != nil{
+
+	var i input.UpdateStatusInput
+	if err := json.Unmarshal(jsonBody, &i); err != nil {
 		handler.HandleError(w, err)
 		return
 	}
 
 	ctx := r.Context()
-	pedido, err := c.uc.Execute(&ctx, i)
+	pedido, err := c.uc.Execute(&ctx, &i)
 	if err != nil {
 		handler.HandleError(w, err)
 		return

@@ -1,17 +1,12 @@
 package erros
 
-import (
-	"fmt"
-)
-
 type InvalidRequestErr struct {
-
 }
 
 func NewInvalidRequestErr() error {
-	return &ChangeStatusErr{}
+	return InvalidRequestErr{}
 }
 
-func (c *InvalidRequestErr) Error() string {
-	return fmt.Sprintf("requisição inválida! ")
+func (c InvalidRequestErr) Error() string {
+	return "requisicao inválida!"
 }

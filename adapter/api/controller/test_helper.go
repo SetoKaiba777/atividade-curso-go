@@ -9,11 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type errorReader struct{}
 
-func (e *errorReader) Read(p []byte) (n int, err error) {
-	return 0, fmt.Errorf("mock read error")
-}
 
 type (
 	searchUserByIdMock struct {
@@ -22,6 +18,7 @@ type (
 	updateStatusMock struct {
 		mock.Mock
 	}
+	errorReader struct{}
 )
 
 func (uc *searchUserByIdMock) Execute(ctx *context.Context, i *input.FindByIdInput) (*[]domain.Pedido, error) {
@@ -32,4 +29,9 @@ func (uc *searchUserByIdMock) Execute(ctx *context.Context, i *input.FindByIdInp
 func (uc *updateStatusMock) Execute(ctx *context.Context, i *input.UpdateStatusInput) (*domain.Pedido, error) {
 	args := uc.Called()
 	return args.Get(0).(*domain.Pedido), args.Error(1)
+}
+
+
+func (e *errorReader) Read(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("read error")
 }
