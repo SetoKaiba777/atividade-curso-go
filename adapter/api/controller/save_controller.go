@@ -10,32 +10,34 @@ import (
 	"net/http"
 )
 
-type UpdateStatusController struct {
-	uc usecase.UpdateStatus
+type SaveController struct {
+	uc usecase.SaveData
 }
 
-func NewUpdateStatusController(uc usecase.UpdateStatus) *UpdateStatusController {
-	return &UpdateStatusController{uc: uc}
+func NewSaveController(uc usecase.SaveData) *SaveController {
+	return &SaveController{uc: uc}
 }
 
-func (c *UpdateStatusController) Execute(w http.ResponseWriter, r *http.Request) {
+func (c *SaveController) Execute(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	jsonBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		handler.HandleError(w, err)
+		return
 	}
 
-	var i input.UpdateStatusInput
+	var i input.SaveInput
 	if err := json.Unmarshal(jsonBody, &i); err != nil {
 		handler.HandleError(w, err)
 		return
 	}
 
-	ctx := r.Context()
-	pedido, err := c.uc.Execute(&ctx, &i)
+	p, err := c.uc.Execute(&ctx, &i)
 	if err != nil {
 		handler.HandleError(w, err)
 		return
 	}
 
-	response.NewSucess(http.StatusOK, pedido).Send(w)
+	response.NewSucess(http.StatusOK, p).Send(w)
 }

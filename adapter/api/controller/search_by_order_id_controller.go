@@ -6,34 +6,32 @@ import (
 	"api-pedidos/core/erros"
 	"api-pedidos/core/usecase"
 	"api-pedidos/core/usecase/input"
-	"api-pedidos/infrastructure/logger"
 	"net/http"
 )
 
-type SearchByUserIdController struct {
-	uc usecase.SearchByUserId
+type SearchByOrderIdController struct {
+	uc usecase.SearchById
 }
 
-func NewSearchByUserIdController(uc usecase.SearchByUserId) *SearchByUserIdController{
-	return &SearchByUserIdController{uc: uc}
+func NewSearchByOrderIdController(uc usecase.SearchById) *SearchByOrderIdController {
+	return &SearchByOrderIdController{uc: uc}
 }
 
-func (c *SearchByUserIdController) Execute(w http.ResponseWriter,r *http.Request ){
- 	userId := r.URL.Query().Get("userId")
-	
-	if userId == ""{
+func (c *SearchByOrderIdController) Execute(w http.ResponseWriter, r *http.Request) {
+	userId := r.URL.Query().Get("orderId")
+
+	if userId == "" {
 		handler.HandleError(w, erros.NewInvalidRequestErr())
-		return	
+		return
 	}
 
 	i := &input.FindByIdInput{Id: userId}
 	ctx := r.Context()
 	pedidos, err := c.uc.Execute(&ctx, i)
-	if err != nil{
+	if err != nil {
 		handler.HandleError(w, err)
 		return
 	}
 
-	logger.Info("Response Body", pedidos)
 	response.NewSucess(http.StatusOK, pedidos).Send(w)
 }

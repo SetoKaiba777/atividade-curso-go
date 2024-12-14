@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"api-pedidos/core/domain"
+	"api-pedidos/core/usecase/input"
 	"context"
 	"fmt"
 	"testing"
@@ -10,10 +11,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-
-
 func TestSaveDataExecute(t *testing.T) {
-	inPadrao := domain.Pedido{
+	inPadrao := input.SaveInput{
 		UserId: "testUser",
 		ListaProdutos: []domain.Produto{
 			{
@@ -38,7 +37,7 @@ func TestSaveDataExecute(t *testing.T) {
 
 	tt := []struct {
 		name     string
-		input    domain.Pedido
+		input    input.SaveInput
 		expected domain.Pedido
 		err      error
 	}{
@@ -60,10 +59,10 @@ func TestSaveDataExecute(t *testing.T) {
 			//Cria a estrtura de teste
 			r := NewMockDatabase()
 			uc := NewSaveData(r)
-			
+
 			// Estabelece comportamento do mock
 			r.On("Add", mock.Anything, mock.Anything).Return(sc.expected, sc.err)
-			
+
 			//Execução
 			ctx := context.TODO()
 			out, err := uc.Execute(&ctx, &sc.input)

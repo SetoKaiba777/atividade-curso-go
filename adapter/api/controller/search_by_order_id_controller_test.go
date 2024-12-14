@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestSearchByUserIdController(t *testing.T) {
-	uc := searchUserByIdMock{}
+func TestSearchByOrderIdController(t *testing.T) {
+	uc := searchOrderByIdMock{}
 
 	tt := []struct {
 		name               string
@@ -23,13 +23,13 @@ func TestSearchByUserIdController(t *testing.T) {
 	}{
 		{
 			name:               "erro de url",
-			input:              "/v1/usuario?userId=",
+			input:              "/v1/usuario?orderId=",
 			mockUseCaseSetup:   func() {},
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
 			name:  "erro not found",
-			input: "/v1/usuario?userId=10",
+			input: "/v1/usuario?orderId=10",
 			mockUseCaseSetup: func() {
 				uc.On("Execute", mock.Anything, mock.Anything).Return(&domain.Pedido{}, erros.NewNotFoundErr("10", "Usuário")).Once()
 			},
@@ -37,18 +37,16 @@ func TestSearchByUserIdController(t *testing.T) {
 		},
 		{
 			name:  "sucesso",
-			input: "/v1/usuario?userId=1",
+			input: "/v1/usuario?orderId=1",
 			mockUseCaseSetup: func() {
-				uc.On("Execute", mock.Anything, mock.Anything).Return(&[]domain.Pedido{
-					{
-						Id:     "1",
-						UserId: "testUser",
-						ListaProdutos: []domain.Produto{
-							{
-								Nome:       "Bomba Nuclear",
-								Valor:      10.00,
-								Quantidade: 10,
-							},
+				uc.On("Execute", mock.Anything, mock.Anything).Return(&domain.Pedido{
+					Id:     "1",
+					UserId: "testUser",
+					ListaProdutos: []domain.Produto{
+						{
+							Nome:       "Bomba Nuclear",
+							Valor:      10.00,
+							Quantidade: 10,
 						},
 					}}, nil).Once()
 			},
@@ -57,7 +55,7 @@ func TestSearchByUserIdController(t *testing.T) {
 	}
 	for _, sc := range tt {
 		t.Run(sc.name, func(t *testing.T) {
-			c := NewSearchByUserIdController(&uc)
+			c := NewSearchByOrderIdController(&uc)
 
 			r := httptest.NewRequest("GET", sc.input, &bytes.Reader{})
 			w := httptest.NewRecorder()
